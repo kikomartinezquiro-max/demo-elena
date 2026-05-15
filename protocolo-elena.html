@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Por dentro del protocolo · Método CEC® · Kiko Martínez</title>
+<meta name="description" content="Una experiencia inmersiva que muestra cómo es por dentro un protocolo personalizado del Método Integrativo CEC®. Caso demo: Elena.">
+<meta name="theme-color" content="#1C1A17">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Raleway:wght@200;300;400;500;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --oscuro:#1C1A17; --oscuro-prof:#0E0D0B;
+  --dorado:#C9A96E; --dorado-claro:#E0C896; --dorado-tenue:rgba(201,169,110,0.18);
+  --crema:#F5EDD8; --verde:#7A8C6E; --verde-tenue:rgba(122,140,110,0.18);
+  --amarillo:#D4B86A; --amarillo-tenue:rgba(212,184,106,0.18);
+  --rojo:#C26B5A; --rojo-tenue:rgba(194,107,90,0.15);
+  --tinta:rgba(245,237,216,0.78); --tinta-suave:rgba(245,237,216,0.55);
+  --linea:rgba(201,169,110,0.25);
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --sans:'Raleway',system-ui,sans-serif;
+  --texto:'Lato',system-ui,sans-serif;
+  --t-suave:600ms cubic-bezier(0.22,1,0.36,1);
+  --t-lento:1400ms cubic-bezier(0.22,1,0.36,1);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html{scroll-behavior:smooth;background:var(--oscuro-prof);}
+body{font-family:var(--texto);color:var(--crema);background:var(--oscuro-prof);line-height:1.65;font-weight:300;overflow-x:hidden;min-height:100vh;-webkit-font-smoothing:antialiased;}
+
+.experiencia{width:100%;max-width:520px;margin:0 auto;background:var(--oscuro);position:relative;overflow:hidden;box-shadow:0 0 80px rgba(0,0,0,0.6);}
+@media(min-width:768px){body{padding:40px 0;background:radial-gradient(ellipse at center,#161412 0%,#0a0908 100%);}.experiencia{border-radius:24px;border:1px solid rgba(201,169,110,0.08);}}
+
+.escena{position:relative;width:100%;min-height:100vh;padding:100px 26px 70px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;overflow:hidden;}
+@media(min-width:768px){.escena{min-height:760px;padding:110px 40px 80px;}}
+
+.luz{position:absolute;border-radius:50%;background:radial-gradient(circle,rgba(201,169,110,0.18),rgba(201,169,110,0) 70%);pointer-events:none;z-index:0;filter:blur(20px);}
+.luz.tr{top:-120px;right:-100px;width:320px;height:320px;}
+.luz.c{top:30%;left:50%;transform:translateX(-50%);width:420px;height:420px;opacity:0.6;}
+.luz.bl{bottom:-150px;left:-120px;width:350px;height:350px;opacity:0.7;}
+
+.contenido{position:relative;z-index:2;width:100%;}
+
+.aparece{opacity:0;transform:translateY(30px);transition:opacity var(--t-lento),transform var(--t-lento);}
+.aparece.visible{opacity:1;transform:translateY(0);}
+.r1{transition-delay:200ms;}.r2{transition-delay:400ms;}.r3{transition-delay:600ms;}.r4{transition-delay:800ms;}.r5{transition-delay:1000ms;}
+
+.cintillo{font-family:var(--sans);font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--dorado);margin-bottom:20px;display:inline-flex;align-items:center;gap:12px;}
+.cintillo::before,.cintillo::after{content:'';width:24px;height:1px;background:var(--dorado);opacity:0.5;}
+
+h1.titulo{font-family:var(--serif);font-weight:300;font-size:clamp(32px,9vw,46px);line-height:1.1;color:var(--crema);letter-spacing:-0.5px;margin-bottom:20px;}
+h2.titulo-escena{font-family:var(--serif);font-weight:300;font-size:clamp(28px,7vw,38px);line-height:1.18;color:var(--crema);margin-bottom:18px;letter-spacing:-0.3px;}
+h2.titulo-escena em{font-style:italic;color:var(--dorado);font-weight:400;}
+.lead{font-family:var(--serif);font-size:clamp(18px,4.5vw,22px);line-height:1.5;color:var(--tinta);font-weight:300;margin-bottom:24px;font-style:italic;}
+
+/* BARRA SUPERIOR */
+.barra-superior{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:520px;padding:14px 18px;background:rgba(28,26,23,0.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--linea);z-index:200;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+@media(min-width:768px){.barra-superior{border-radius:0 0 24px 24px;}}
+.barra-marca{font-family:var(--serif);font-size:13px;color:var(--crema);line-height:1.2;}
+.barra-marca strong{display:block;font-family:var(--sans);font-size:9px;letter-spacing:2.5px;color:var(--dorado);font-weight:500;text-transform:uppercase;margin-top:2px;}
+.barra-tour{display:flex;align-items:center;gap:10px;}
+.tour-progreso{display:flex;gap:4px;}
+.tdot{width:6px;height:6px;border-radius:50%;background:rgba(201,169,110,0.3);transition:all var(--t-suave);}
+.tdot.activo{background:var(--dorado);transform:scale(1.5);}
+.tdot.completo{background:rgba(201,169,110,0.65);}
+.btn-tour{width:34px;height:34px;border-radius:50%;background:var(--dorado-tenue);border:1px solid var(--dorado);color:var(--dorado);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;transition:all var(--t-suave);}
+.btn-tour:hover{background:var(--dorado);color:var(--oscuro);}
+.btn-tour svg{width:13px;height:13px;}
+.btn-tour .ico-play{display:none;}
+.btn-tour.pausado .ico-pause{display:none;}
+.btn-tour.pausado .ico-play{display:block;}
+.tour-barra{position:absolute;bottom:-1px;left:0;height:2px;background:var(--dorado);width:0%;box-shadow:0 0 8px rgba(201,169,110,0.7);transition:width 100ms linear;}
+
+/* BOTÓN AUDIO */
+.boton-audio{position:fixed;top:74px;left:calc(50% - 244px);width:40px;height:40px;border-radius:50%;background:rgba(28,26,23,0.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--linea);color:var(--dorado);cursor:pointer;z-index:150;display:flex;align-items:center;justify-content:center;padding:0;transition:all 300ms cubic-bezier(0.22,1,0.36,1);}
+@media(max-width:560px){.boton-audio{left:14px;}}
+.boton-audio:hover{background:rgba(28,26,23,0.98);border-color:var(--dorado);}
+.boton-audio.sonando{background:var(--dorado-tenue);border-color:var(--dorado);}
+.boton-audio.sonando::before{content:'';position:absolute;inset:-4px;border-radius:50%;border:1px solid var(--dorado);opacity:0;animation:pulsoAudio 2.8s ease-in-out infinite;pointer-events:none;}
+@keyframes pulsoAudio{0%{opacity:0;transform:scale(0.92);}50%{opacity:0.55;transform:scale(1.0);}100%{opacity:0;transform:scale(1.18);}}
+.boton-audio svg{width:18px;height:18px;position:absolute;transition:opacity 250ms;}
+.boton-audio .icono-play{opacity:0;}
+.boton-audio.sonando .icono-mute{opacity:0;}
+.boton-audio.sonando .icono-play{opacity:1;}
+.audio-hint{position:fixed;top:82px;left:calc(50% - 192px);font-family:var(--sans);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--dorado);opacity:0;z-index:149;pointer-events:none;animation:hintAparece 4.5s ease 2s forwards;white-space:nowrap;}
+@media(max-width:560px){.audio-hint{left:66px;}}
+@keyframes hintAparece{0%{opacity:0;transform:translateX(-8px);}25%{opacity:0.85;transform:translateX(0);}80%{opacity:0.85;transform:translateX(0);}100%{opacity:0;}}
+.audio-hint.ocultar{animation:none;opacity:0!important;}
+
+/* ESCENA 1 · APERTURA */
+.escena-apertura{background:radial-gradient(ellipse at center,#1f1d19 0%,var(--oscuro-prof) 100%);}
+.logo-cec{width:78px;height:78px;border:1px solid var(--dorado);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 30px;position:relative;}
+.logo-cec::before{content:'';position:absolute;inset:-8px;border:1px solid var(--dorado);border-radius:50%;opacity:0.25;}
+.logo-cec span{font-family:var(--serif);font-size:20px;letter-spacing:3px;color:var(--dorado);padding-left:3px;}
+.frase-eco{font-family:var(--serif);font-style:italic;font-size:clamp(17px,4.2vw,21px);color:var(--tinta);line-height:1.55;max-width:380px;margin:18px auto 0;}
+.nota-tour{font-family:var(--sans);font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--dorado);margin-top:32px;padding:8px 16px;border:1px solid var(--linea);border-radius:100px;display:inline-block;}
+
+/* ESCENA 2 · CARTA */
+.escena-bienvenida{background:linear-gradient(180deg,var(--oscuro) 0%,#1a1815 100%);}
+.documento{width:100%;max-width:460px;background:rgba(245,237,216,0.04);border:1px solid var(--linea);border-radius:14px;padding:26px 22px;text-align:left;position:relative;}
+.documento::before{content:'CEC®';position:absolute;top:12px;right:16px;font-family:var(--serif);font-style:italic;font-size:13px;color:var(--dorado);letter-spacing:1px;opacity:0.55;}
+.doc-encabezado{border-bottom:1px solid var(--linea);padding-bottom:16px;margin-bottom:18px;text-align:center;}
+.doc-tipo{font-family:var(--sans);font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--dorado);margin-bottom:6px;}
+.doc-titulo{font-family:var(--serif);font-size:20px;font-weight:400;color:var(--crema);line-height:1.25;margin-bottom:4px;}
+.doc-cliente{font-family:var(--serif);font-style:italic;font-size:15px;color:var(--dorado-claro);}
+.carta-saludo{font-family:var(--serif);font-style:italic;font-size:18px;color:var(--dorado-claro);margin-bottom:14px;}
+.carta-p{font-size:14px;line-height:1.75;color:var(--tinta);margin-bottom:12px;}
+.carta-p em{color:var(--dorado-claro);font-style:italic;}
+.carta-firma{margin-top:18px;padding-top:14px;border-top:1px dashed var(--linea);text-align:right;font-family:var(--serif);font-style:italic;font-size:14px;color:var(--tinta);}
+.carta-firma strong{display:block;color:var(--dorado);font-weight:400;font-style:normal;margin-top:3px;font-size:15px;letter-spacing:0.5px;}
+
+/* ESCENA 3 · PERFIL */
+.escena-perfil{background:var(--oscuro);}
+.perfil-card{width:100%;max-width:460px;background:rgba(245,237,216,0.03);border:1px solid var(--linea);border-radius:14px;padding:24px 20px;text-align:left;}
+.perfil-header{text-align:center;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--linea);}
+.perfil-etiqueta{font-family:var(--sans);font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--dorado);margin-bottom:8px;}
+.perfil-nombre{font-family:var(--serif);font-size:26px;font-weight:400;color:var(--crema);letter-spacing:-0.3px;line-height:1.15;}
+.perfil-nombre em{font-style:italic;color:var(--dorado);}
+.perfil-frase{font-family:var(--serif);font-style:italic;font-size:14px;color:var(--tinta);margin-top:8px;}
+.gauge-svg{width:100%;max-width:240px;margin:0 auto;display:block;}
+.gauge-valor{text-align:center;margin-top:-6px;margin-bottom:14px;}
+.gauge-valor .numero{font-family:var(--serif);font-size:46px;font-weight:300;color:var(--crema);letter-spacing:-1px;}
+.gauge-valor .max{font-family:var(--serif);font-size:18px;color:var(--dorado);font-style:italic;}
+.gauge-label{text-align:center;font-family:var(--sans);font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--dorado);margin-bottom:8px;}
+.perfil-desc{font-size:14px;line-height:1.7;color:var(--tinta);margin-bottom:12px;}
+.perfil-claves{background:var(--dorado-tenue);border-left:3px solid var(--dorado);padding:14px 16px;border-radius:0 8px 8px 0;margin-top:14px;}
+.perfil-claves .t{font-family:var(--sans);font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--dorado);margin-bottom:8px;font-weight:500;}
+.perfil-claves ul{list-style:none;padding:0;}
+.perfil-claves li{font-size:13px;color:var(--tinta);padding:3px 0 3px 14px;position:relative;line-height:1.5;}
+.perfil-claves li::before{content:'·';position:absolute;left:2px;color:var(--dorado);font-size:18px;font-weight:bold;top:0;}
+
+/* ESCENA 4 · MAPA */
+.escena-mapa{background:linear-gradient(180deg,var(--oscuro) 0%,#1a1815 100%);}
+.mapa-intro{font-family:var(--serif);font-style:italic;font-size:15px;color:var(--tinta);max-width:400px;margin:0 auto 20px;line-height:1.55;}
+.mapa-cards{display:flex;flex-direction:column;gap:9px;width:100%;max-width:440px;}
+.mapa-card{background:rgba(245,237,216,0.04);border-left:3px solid var(--dorado);border-radius:0 8px 8px 0;padding:12px 16px;text-align:left;display:flex;align-items:flex-start;gap:12px;}
+.mapa-card .icono{width:32px;height:32px;border-radius:50%;background:var(--dorado-tenue);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--dorado);font-family:var(--serif);font-style:italic;font-size:14px;font-weight:500;}
+.mapa-card .info{flex:1;}
+.mapa-card .nombre{font-family:var(--serif);font-size:16px;color:var(--crema);font-weight:500;margin-bottom:2px;letter-spacing:-0.2px;}
+.mapa-card .desc{font-size:12.5px;color:var(--tinta-suave);line-height:1.45;}
+
+/* ESCENA 5 · MENÚ */
+.escena-menu{background:var(--oscuro);}
+.menu-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;width:100%;max-width:440px;margin-top:20px;}
+.menu-card{background:rgba(245,237,216,0.03);border:1px solid var(--linea);border-radius:10px;padding:16px 12px;text-align:center;position:relative;transition:all var(--t-suave);}
+.menu-card.destacada{border-color:var(--dorado);background:var(--dorado-tenue);}
+.menu-card.destacada::after{content:'';position:absolute;top:8px;right:8px;width:6px;height:6px;background:var(--dorado);border-radius:50%;box-shadow:0 0 8px var(--dorado);animation:latido 2s ease-in-out infinite;}
+@keyframes latido{0%,100%{opacity:0.6;}50%{opacity:1;}}
+.menu-card .num{font-family:var(--serif);font-size:32px;color:var(--dorado);line-height:1;margin-bottom:4px;font-weight:300;}
+.menu-card .nm{font-family:var(--sans);font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:var(--crema);font-weight:500;line-height:1.35;}
+.menu-card .tag{font-size:9px;color:var(--tinta-suave);margin-top:3px;font-family:var(--sans);}
+.menu-aviso{font-family:var(--serif);font-style:italic;font-size:14px;color:var(--dorado-claro);margin-top:20px;max-width:380px;line-height:1.5;}
+
+/* ESCENA 6 · CALENDARIO */
+.escena-calendario{background:linear-gradient(180deg,var(--oscuro) 0%,#1a1815 100%);}
+.cal-leyenda{display:flex;justify-content:center;gap:18px;margin:14px 0 18px;flex-wrap:wrap;}
+.cal-leyenda span{font-family:var(--sans);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--tinta);display:flex;align-items:center;gap:5px;}
+.cal-leyenda .estrella{color:var(--dorado);font-size:14px;}
+.calendario{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;width:100%;max-width:460px;}
+.cal-dia{background:rgba(245,237,216,0.03);border:1px solid var(--linea);border-radius:8px;padding:8px 4px;min-height:140px;display:flex;flex-direction:column;align-items:center;text-align:center;}
+.cal-dia.findesemana{background:rgba(122,140,110,0.06);border-color:rgba(122,140,110,0.2);}
+.cal-dia .dia-nombre{font-family:var(--sans);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dorado);font-weight:500;margin-bottom:6px;border-bottom:1px solid var(--linea);padding-bottom:4px;width:100%;}
+.cal-dia.findesemana .dia-nombre{color:var(--verde);}
+.cal-dia .practica{font-size:9px;color:var(--tinta);line-height:1.3;padding:3px 1px;border-bottom:1px dotted rgba(245,237,216,0.06);width:100%;display:flex;align-items:center;justify-content:center;gap:2px;min-height:24px;}
+.cal-dia .practica:last-child{border-bottom:none;}
+.cal-dia .practica.minimo{color:var(--dorado-claro);font-weight:500;}
+.cal-dia .practica .star{color:var(--dorado);font-size:8px;flex-shrink:0;}
+
+.cal-nota{font-family:var(--serif);font-style:italic;font-size:14px;color:var(--tinta);max-width:400px;margin:18px auto 0;line-height:1.5;text-align:center;}
+
+/* ESCENA 7 · ASANA */
+.escena-asana{background:var(--oscuro);}
+.asana-card{width:100%;max-width:460px;background:linear-gradient(180deg,rgba(245,237,216,0.04) 0%,rgba(245,237,216,0.01) 100%);border:1px solid var(--dorado);border-radius:14px;padding:24px 20px;text-align:left;box-shadow:0 20px 50px rgba(0,0,0,0.4);}
+.asana-tag{display:inline-block;font-family:var(--sans);font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--oscuro);background:var(--dorado);padding:4px 10px;border-radius:100px;font-weight:600;margin-bottom:12px;}
+.asana-nombre{font-family:var(--serif);font-size:24px;font-weight:400;color:var(--crema);line-height:1.2;margin-bottom:4px;letter-spacing:-0.3px;}
+.asana-nombre em{font-style:italic;color:var(--dorado);}
+.asana-sanscrito{font-family:var(--serif);font-style:italic;font-size:14px;color:var(--tinta-suave);margin-bottom:18px;letter-spacing:0.5px;}
+
+.asana-visual{width:100%;max-width:280px;margin:14px auto 22px;}
+.asana-visual svg{width:100%;height:auto;display:block;}
+
+/* Semáforo clínico */
+.semaforo{display:flex;flex-direction:column;gap:6px;margin:14px 0;}
+.semaforo-fila{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:8px;font-size:12.5px;line-height:1.5;}
+.semaforo-fila.verde{background:var(--verde-tenue);border-left:3px solid var(--verde);}
+.semaforo-fila.amarillo{background:var(--amarillo-tenue);border-left:3px solid var(--amarillo);}
+.semaforo-fila.rojo{background:var(--rojo-tenue);border-left:3px solid var(--rojo);}
+.semaforo-luz{width:14px;height:14px;border-radius:50%;flex-shrink:0;margin-top:2px;box-shadow:0 0 8px currentColor;}
+.semaforo-fila.verde .semaforo-luz{background:var(--verde);color:var(--verde);}
+.semaforo-fila.amarillo .semaforo-luz{background:var(--amarillo);color:var(--amarillo);}
+.semaforo-fila.rojo .semaforo-luz{background:var(--rojo);color:var(--rojo);}
+.semaforo-texto{flex:1;color:var(--tinta);}
+.semaforo-texto strong{display:block;font-family:var(--sans);font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:3px;font-weight:500;}
+.semaforo-fila.verde strong{color:var(--verde);}
+.semaforo-fila.amarillo strong{color:var(--amarillo);}
+.semaforo-fila.rojo strong{color:var(--rojo);}
+
+.elemento{margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid var(--linea);}
+.elemento:last-of-type{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+.elemento-num{display:inline-flex;align-items:center;gap:8px;font-family:var(--sans);font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--dorado);font-weight:500;margin-bottom:6px;}
+.elemento-num .n{font-family:var(--serif);font-style:italic;font-size:15px;letter-spacing:0;color:var(--dorado);}
+.elemento-titulo{font-family:var(--serif);font-size:17px;font-weight:500;color:var(--crema);margin-bottom:8px;letter-spacing:-0.2px;}
+.elemento-cuerpo{font-size:13.5px;line-height:1.7;color:var(--tinta);}
+.elemento-cuerpo .destacado{color:var(--dorado-claro);font-style:italic;}
+.pasos{list-style:none;margin-top:10px;counter-reset:paso;}
+.pasos li{padding:9px 0 9px 32px;position:relative;font-size:13px;line-height:1.6;color:var(--tinta);border-bottom:1px dashed rgba(201,169,110,0.12);counter-increment:paso;}
+.pasos li:last-child{border-bottom:none;}
+.pasos li::before{content:counter(paso,decimal-leading-zero);position:absolute;left:0;top:11px;font-family:var(--serif);font-style:italic;font-size:12px;color:var(--dorado);font-weight:500;}
+.clave{background:var(--dorado-tenue);border-left:3px solid var(--dorado);padding:14px 16px;border-radius:0 8px 8px 0;margin-top:6px;font-family:var(--serif);font-style:italic;font-size:15px;line-height:1.5;color:var(--crema);}
+
+/* ESCENA 8 · BITÁCORA */
+.escena-bitacora{background:linear-gradient(180deg,#1a1815 0%,var(--oscuro) 100%);}
+.bitacora-card{width:100%;max-width:460px;background:rgba(245,237,216,0.04);border:1px solid var(--dorado);border-radius:14px;padding:24px 20px;text-align:left;}
+.bitacora-intro{font-size:13.5px;line-height:1.7;color:var(--tinta);margin-bottom:18px;}
+.bitacora-intro em{color:var(--dorado-claro);font-style:italic;}
+.bitacora-preguntas{display:flex;flex-direction:column;gap:14px;}
+.pregunta-bloque label{display:block;font-family:var(--sans);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dorado);margin-bottom:6px;font-weight:500;}
+.pregunta-bloque .p-texto{font-family:var(--serif);font-style:italic;font-size:14px;color:var(--tinta);margin-bottom:8px;line-height:1.4;}
+.pregunta-bloque textarea{width:100%;background:rgba(28,26,23,0.6);border:1px solid var(--linea);border-radius:8px;padding:10px 12px;color:var(--crema);font-family:var(--texto);font-size:13.5px;line-height:1.55;resize:vertical;min-height:54px;transition:all var(--t-suave);}
+.pregunta-bloque textarea:focus{outline:none;border-color:var(--dorado);background:rgba(28,26,23,0.85);box-shadow:0 0 0 3px var(--dorado-tenue);}
+.pregunta-bloque textarea::placeholder{color:var(--tinta-suave);font-style:italic;}
+.bitacora-aviso{font-family:var(--serif);font-style:italic;font-size:12.5px;color:var(--tinta-suave);text-align:center;margin-top:16px;padding-top:14px;border-top:1px dashed var(--linea);line-height:1.5;}
+
+/* ESCENA 9 · CIERRE */
+.escena-cierre{background:radial-gradient(ellipse at center,#1f1d19 0%,var(--oscuro-prof) 100%);}
+.cierre-mensaje{font-family:var(--serif);font-size:clamp(20px,5.5vw,26px);line-height:1.45;color:var(--crema);font-weight:300;margin:22px 0;}
+.cierre-mensaje em{font-style:italic;color:var(--dorado);}
+.cierre-pregunta{font-family:var(--serif);font-style:italic;font-size:17px;color:var(--tinta);margin:18px 0 28px;line-height:1.5;}
+.cta-bloque{display:flex;flex-direction:column;gap:10px;width:100%;max-width:380px;margin:0 auto;}
+.cta-principal{display:flex;align-items:center;justify-content:center;gap:10px;background:var(--dorado);color:var(--oscuro);font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;padding:16px 22px;border-radius:100px;text-decoration:none;transition:all var(--t-suave);border:1px solid var(--dorado);}
+.cta-principal:hover{background:var(--dorado-claro);transform:translateY(-2px);box-shadow:0 12px 30px rgba(201,169,110,0.25);}
+.cta-principal svg{width:16px;height:16px;flex-shrink:0;}
+.cta-telefono{font-family:var(--serif);font-size:20px;color:var(--dorado-claro);margin-top:4px;letter-spacing:1px;text-align:center;}
+.cta-nombre{font-family:var(--sans);font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--tinta-suave);margin-top:12px;text-align:center;}
+.cta-nombre strong{display:block;font-family:var(--serif);font-style:italic;font-size:20px;letter-spacing:0.5px;text-transform:none;color:var(--crema);margin-top:4px;font-weight:400;}
+.lema-final{font-family:var(--serif);font-style:italic;font-size:15px;line-height:1.5;color:var(--dorado);margin:40px 0 14px;padding-top:30px;border-top:1px solid var(--linea);}
+.firma-cierre{font-family:var(--serif);font-size:13px;color:var(--tinta-suave);}
+.firma-cierre strong{display:block;color:var(--dorado-claro);font-weight:500;margin-top:4px;font-style:italic;font-size:15px;}
+.aviso-legal{font-family:var(--sans);font-size:9.5px;color:var(--tinta-suave);line-height:1.6;margin-top:24px;padding:14px 12px;background:rgba(0,0,0,0.25);border-radius:8px;border:1px solid rgba(245,237,216,0.06);font-style:italic;}
+
+@media(max-width:380px){.escena{padding:90px 20px 60px;}.asana-card,.bitacora-card{padding:20px 16px;}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms!important;transition-duration:0.01ms!important;}}
+</style>
+</head>
+<body>
+
+<!-- AUDIO -->
+<audio id="audioCEC" loop preload="auto">
+  <source src="audio/ambient-cec.mp3" type="audio/mpeg">
+</audio>
+
+<!-- BOTÓN AUDIO -->
+<button class="boton-audio" id="botonAudio" aria-label="Activar música ambiental">
+  <svg class="icono-mute" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+  <svg class="icono-play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+</button>
+<span class="audio-hint" id="audioHint">Activa la música</span>
+
+<!-- BARRA SUPERIOR -->
+<div class="barra-superior">
+  <div class="barra-marca">
+    Por dentro del protocolo
+    <strong>CEC® · Elena R.</strong>
+  </div>
+  <div class="barra-tour">
+    <div class="tour-progreso" id="tourProgreso"></div>
+    <button class="btn-tour" id="btnTour" aria-label="Pausar tour">
+      <svg class="ico-pause" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+      <svg class="ico-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+    </button>
+  </div>
+  <div class="tour-barra" id="tourBarra"></div>
+</div>
+
+<main class="experiencia">
+
+<!-- ESCENA 1 -->
+<section class="escena escena-apertura" data-titulo="Apertura" data-duracion="13000">
+  <div class="luz c"></div>
+  <div class="contenido">
+    <div class="logo-cec aparece"><span>CEC</span></div>
+    <div class="cintillo aparece r1">El protocolo personalizado</div>
+    <h1 class="titulo aparece r2">Esto es lo que<br><em>recibirás</em></h1>
+    <p class="frase-eco aparece r3">Asómate por encima del hombro de Elena. Mira por dentro su protocolo CEC®, exactamente como llegó a ella.</p>
+    <div class="nota-tour aparece r4">▶ Recorrido auto-guiado</div>
+  </div>
+</section>
+
+<!-- ESCENA 2 -->
+<section class="escena escena-bienvenida" data-titulo="Bienvenida" data-duracion="18000">
+  <div class="luz tr"></div>
+  <div class="contenido">
+    <div class="cintillo aparece">Página 1 · Bienvenida</div>
+    <h2 class="titulo-escena aparece r1">Una carta antes<br>de <em>empezar</em></h2>
+
+    <div class="documento aparece r2">
+      <div class="doc-encabezado">
+        <div class="doc-tipo">Protocolo Integrativo CEC®</div>
+        <div class="doc-titulo">Programa Personalizado</div>
+        <div class="doc-cliente">Elena R. · 42 años</div>
+      </div>
+
+      <div class="carta-saludo">Querida Elena,</div>
+      <p class="carta-p">Gracias por confiar en este proceso. Lo que sostienes en estas páginas <em>no es una rutina</em>: es un mapa diseñado a partir de lo que me has contado, leído con calma y con el rigor que tu bienestar merece.</p>
+      <p class="carta-p">Sé que llevas 18 meses sintiendo que no puedes parar. Que la mandíbula se aprieta sin permiso. Que a las tres de la madrugada los pensamientos giran como un molino. Y sé también que has venido aquí porque algo dentro de ti <em>ya sabe</em> que merece otra cosa.</p>
+      <p class="carta-p">Este programa empieza pequeño. Solo tres prácticas mínimas vitales al día. Lo demás, llega cuando estés. <em>El programa crece contigo, no al revés.</em></p>
+      <p class="carta-p">Conmigo no se acelera. Aquí se regula.</p>
+
+      <div class="carta-firma">
+        Con cariño y presencia,
+        <strong>— Kiko Martínez</strong>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ESCENA 3 -->
+<section class="escena escena-perfil" data-titulo="Perfil" data-duracion="16000">
+  <div class="luz c"></div>
+  <div class="contenido">
+    <div class="cintillo aparece">Página 2 · Tu perfil regulador</div>
+    <h2 class="titulo-escena aparece r1">Cómo está tu<br>sistema <em>hoy</em></h2>
+
+    <div class="perfil-card aparece r2">
+      <div class="perfil-header">
+        <div class="perfil-etiqueta">Tu perfil regulador</div>
+        <div class="perfil-nombre">Mixto <em>Desregulado</em></div>
+        <div class="perfil-frase">"Tu sistema oscila entre la hiperactivación diurna y el colapso nocturno."</div>
+      </div>
+
+      <div class="gauge-label">Tu ER-CEC® de partida</div>
+      <svg class="gauge-svg" viewBox="0 0 280 160">
+        <defs><linearGradient id="gg" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#C9A96E" stop-opacity="0.3"/>
+          <stop offset="100%" stop-color="#C9A96E" stop-opacity="1"/>
+        </linearGradient></defs>
+        <path d="M 30 130 A 110 110 0 0 1 250 130" fill="none" stroke="rgba(245,237,216,0.08)" stroke-width="14" stroke-linecap="round"/>
+        <path id="gaugeArco" d="M 30 130 A 110 110 0 0 1 250 130" fill="none" stroke="url(#gg)" stroke-width="14" stroke-linecap="round" stroke-dasharray="346" stroke-dashoffset="346"/>
+        <text x="30" y="150" fill="rgba(245,237,216,0.5)" font-size="10" font-family="Raleway" text-anchor="middle">0</text>
+        <text x="140" y="150" fill="rgba(245,237,216,0.5)" font-size="10" font-family="Raleway" text-anchor="middle">25</text>
+        <text x="250" y="150" fill="rgba(245,237,216,0.5)" font-size="10" font-family="Raleway" text-anchor="middle">50</text>
+      </svg>
+      <div class="gauge-valor"><span class="numero" id="gaugeNum">0</span><span class="max"> / 50</span></div>
+
+      <p class="perfil-desc">Tu perfil mixto desregulado oscila entre dos polos: por el día funcionas en hipervigilancia (la lista no para, el cuerpo está tenso, la mandíbula apretada); por la noche tu sistema cae en colapso (despertares con rumiación a las 03:00). No es debilidad: es un patrón que se ha quedado fijado por sostén constante. Y se puede reentrenar.</p>
+
+      <div class="perfil-claves">
+        <div class="t">Tu programa prioriza</div>
+        <ul>
+          <li>Frenar la activación diurna antes del agotamiento</li>
+          <li>Reeducar la transición vigilia–sueño</li>
+          <li>Soltar el patrón de tensión cervical-mandibular</li>
+          <li>Recuperar la sensación de "tener tiempo"</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ESCENA 4 -->
+<section class="escena escena-mapa" data-titulo="Mapa-resumen" data-duracion="15000">
+  <div class="luz bl"></div>
+  <div class="contenido">
+    <div class="cintillo aparece">Página 3 · Mapa-resumen</div>
+    <h2 class="titulo-escena aparece r1">Tu mapa antes<br>de <em>entrar</em></h2>
+    <p class="mapa-intro aparece r2">Lee esto como un primer abrazo. Aquí está, en una mirada, todo lo que vamos a hacer juntos.</p>
+
+    <div class="mapa-cards">
+      <div class="mapa-card aparece r2"><div class="icono">I</div><div class="info"><div class="nombre">Coaching terapéutico</div><div class="desc">Cinco herramientas para sostenerte cuando la mente acelera.</div></div></div>
+      <div class="mapa-card aparece r3"><div class="icono">II</div><div class="info"><div class="nombre">Yoga terapéutico</div><div class="desc">Diez asanas pensadas para tu cuello, tu mandíbula y tu noche.</div></div></div>
+      <div class="mapa-card aparece r3"><div class="icono">III</div><div class="info"><div class="nombre">Respiración y meditación</div><div class="desc">Cinco prácticas para abrir y cerrar tu día con presencia.</div></div></div>
+      <div class="mapa-card aparece r4"><div class="icono">IV</div><div class="info"><div class="nombre">Herramientas emocionales</div><div class="desc">Cinco recursos y un diario para mirar lo que aparece sin huir.</div></div></div>
+      <div class="mapa-card aparece r4"><div class="icono">V</div><div class="info"><div class="nombre">Suplementación natural</div><div class="desc">Cinco apoyos fitoterapéuticos con seguridad farmacológica.</div></div></div>
+      <div class="mapa-card aparece r5"><div class="icono">VI</div><div class="info"><div class="nombre">Hábitos diarios</div><div class="desc">Cinco rutinas que reentrenan tu reloj interno.</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ESCENA 5 -->
+<section class="escena escena-menu" data-titulo="Menú del protocolo" data-duracion="14000">
+  <div class="luz tr"></div>
+  <div class="contenido">
+    <div class="cintillo aparece">Página 4 · Índice del programa</div>
+    <h2 class="titulo-escena aparece r1">Todo tu<br>programa <em>de un vistazo</em></h2>
+    <p class="lead aparece r2">Cada bloque es navegable. Lo marcado en dorado lo veremos en profundidad.</p>
+
+    <div class="menu-grid">
+      <div class="menu-card aparece r2"><div class="num">5</div><div class="nm">Coaching<br>Terapéutico</div><div class="tag">herramientas</div></div>
+      <div class="menu-card aparece r2"><div class="num">10</div><div class="nm">Yoga<br>Terapéutico</div><div class="tag">asanas</div></div>
+      <div class="menu-card aparece r3"><div class="num">5</div><div class="nm">Estiramientos</div><div class="tag">prácticas</div></div>
+      <div class="menu-card aparece r3"><div class="num">5</div><div class="nm">Fortalecimiento</div><div class="tag">prácticas</div></div>
+      <div class="menu-card aparece r4"><div class="num">5</div><div class="nm">Respiración &<br>Meditación</div><div class="tag">prácticas</div></div>
+      <div class="menu-card destacada aparece r4"><div class="num">5</div><div class="nm">Herramientas<br>Emocionales</div><div class="tag">+ diario</div></div>
+      <div class="menu-card aparece r4"><div class="num">5</div><div class="nm">Lecturas</div><div class="tag">libros</div></div>
+      <div class="menu-card aparece r5"><div class="num">5</div><div class="nm">Suplementación</div><div class="tag">natural</div></div>
+      <div class="menu-card destacada aparece r5"><div class="num">7</div><div class="nm">Calendario<br>Semanal</div><div class="tag">⭐ mínimos</div></div>
+    </div>
+
+    <p class="menu-aviso aparece r5">A continuación, una mirada por dentro a tres piezas clave.</p>
+  </div>
+</section>
+
+<!-- ESCENA 6 · CALENDARIO -->
+<section class="escena escena-calendario" data-titulo="Calendario semanal" data-duracion="16000">
+  <div class="luz c"></div>
+  <div class="contenido">
+    <div class="cintillo aparece">Página 12 · Calendario semanal</div>
+    <h2 class="titulo-escena aparece r1">Tu semana<br><em>mínima vital</em></h2>
+    <p class="lead aparece r2">Solo tres prácticas obligatorias al día. Lo demás, si te apetece.</p>
+    <div class="cal-leyenda aparece r2">
+      <span><span class="estrella">★</span> Mínimo vital</span>
+      <span>· Opcional</span>
+    </div>
+
+    <div class="calendario aparece r3">
+      <div class="cal-dia">
+        <div class="dia-nombre">L</div>
+        <div class="practica minimo"><span class="star">★</span>Resp 5-5</div>
+        <div class="practica minimo"><span class="star">★</span>Piernas arriba</div>
+        <div class="practica minimo"><span class="star">★</span>Bitácora</div>
+        <div class="practica">Cuello suave</div>
+      </div>
+      <div class="cal-dia">
+        <div class="dia-nombre">M</div>
+        <div class="practica minimo"><span class="star">★</span>Resp 5-5</div>
+        <div class="practica minimo"><span class="star">★</span>Piernas arriba</div>
+        <div class="practica minimo"><span class="star">★</span>Bitácora</div>
+        <div class="practica">Gato-vaca</div>
+      </div>
+      <div class="cal-dia">
+        <div class="dia-nombre">X</div>
+        <div class="practica minimo"><span class="star">★</span>Resp 5-5</div>
+        <div class="practica minimo"><span class="star">★</span>Piernas arriba</div>
+        <div class="practica minimo"><span class="star">★</span>Bitácora</div>
+        <div class="practica">Caminar 20'</div>
+      </div>
+      <div class="cal-dia">
+        <div class="dia-nombre">J</div>
+        <div class="practica minimo"><span class="star">★</span>Resp 5-5</div>
+        <div class="practica minimo"><span class="star">★</span>Piernas arriba</div>
+        <div class="practica minimo"><span class="star">★</span>Bitácora</div>
+        <div class="practica">Mandíbula</div>
+      </div>
+      <div class="cal-dia">
+        <div class="dia-nombre">V</div>
+        <div class="practica minimo"><span class="star">★</span>Resp 5-5</div>
+        <div class="practica minimo"><span class="star">★</span>Piernas arriba</div>
+        <div class="practica minimo"><span class="star">★</span>Bitácora</div>
+        <div class="practica">Sin pantallas 21h</div>
+      </div>
+      <div class="cal-dia findesemana">
+        <div class="dia-nombre">S</div>
+        <div class="practica minimo"><span class="star">★</span>Resp 5-5</div>
+        <div class="practica minimo"><span class="star">★</span>Piernas arriba</div>
+        <div class="practica">Yoga largo</div>
+        <div class="practica">Lectura</div>
+      </div>
+      <div class="cal-dia findesemana">
+        <div class="dia-nombre">D</div>
+        <div class="practica minimo"><span class="star">★</span>Resp 5-5</div>
+        <div class="practica minimo"><span class="star">★</span>Piernas arriba</div>
+        <div class="practica">Naturaleza</div>
+        <div class="practica">Descanso</div>
+      </div>
+    </div>
+
+    <p class="cal-nota aparece r5">Si una semana solo haces las ★, ya has cumplido. La consistencia importa más que la perfección.</p>
+  </div>
+</section>
+
+<!-- ESCENA 7 · ASANA -->
+<section class="escena escena-asana" data-titulo="Una asana completa" data-duracion="24000">
+  <div class="contenido">
+    <div class="cintillo aparece">Página 21 · Yoga · Asana 04 de 10</div>
+    <h2 class="titulo-escena aparece r1">Una práctica<br>al <em>completo</em></h2>
+
+    <article class="asana-card aparece r2">
+      <div class="asana-tag">Yoga terapéutico · 04</div>
+      <h3 class="asana-nombre">Piernas <em>Arriba</em></h3>
+      <div class="asana-sanscrito">Viparita Karani · "la postura invertida"</div>
+
+      <div class="asana-visual">
+        <svg viewBox="0 0 280 160" xmlns="http://www.w3.org/2000/svg">
+          <line x1="20" y1="140" x2="260" y2="140" stroke="#C9A96E" stroke-width="1" opacity="0.4"/>
+          <line x1="220" y1="140" x2="220" y2="20" stroke="#C9A96E" stroke-width="1" opacity="0.4"/>
+          <rect x="50" y="128" width="170" height="6" rx="3" fill="#C9A96E" opacity="0.25"/>
+          <circle cx="78" cy="118" r="11" fill="#C9A96E" opacity="0.7"/>
+          <path d="M 78 128 Q 130 128 200 128" stroke="#F5EDD8" stroke-width="6" fill="none" stroke-linecap="round" opacity="0.85"/>
+          <path d="M 200 128 Q 215 128 215 110 L 215 30" stroke="#F5EDD8" stroke-width="6" fill="none" stroke-linecap="round" opacity="0.85"/>
+          <circle cx="215" cy="28" r="5" fill="#F5EDD8" opacity="0.85"/>
+          <circle cx="215" cy="50" r="5" fill="#F5EDD8" opacity="0.85"/>
+          <text x="140" y="155" fill="rgba(245,237,216,0.4)" font-size="9" font-family="Raleway" text-anchor="middle" letter-spacing="2">SUELO · PARED</text>
+        </svg>
+      </div>
+
+      <div class="elemento">
+        <div class="elemento-num"><span class="n">01</span> Objetivo terapéutico CEC®</div>
+        <div class="elemento-titulo">Devolver el sistema al modo nocturno</div>
+        <div class="elemento-cuerpo">Drenar la tensión acumulada en cuello y mandíbula mediante <span class="destacado">inversión suave</span>, calmar el sistema nervioso simpático y preparar al cuerpo para la transición al sueño. Específicamente útil para tu patrón mixto desregulado y la rumiación de las 03:00.</div>
+      </div>
+
+      <div class="elemento">
+        <div class="elemento-num"><span class="n">02</span> Semáforo clínico personalizado</div>
+        <div class="semaforo">
+          <div class="semaforo-fila verde">
+            <div class="semaforo-luz"></div>
+            <div class="semaforo-texto"><strong>Adelante</strong>En tu perfil, esta postura es de las más reguladoras. Compatible con tu cervicalgia tensional, tu insomnio y tu hipervigilancia. Practícala todos los días.</div>
+          </div>
+          <div class="semaforo-fila amarillo">
+            <div class="semaforo-luz"></div>
+            <div class="semaforo-texto"><strong>Con matiz</strong>Si tienes la regla con sangrado abundante o sientes mareo al elevar piernas: usa solo 5 minutos y respira lento. Si tu cuello sigue tenso al bajar, coloca una toalla doblada bajo la nuca.</div>
+          </div>
+          <div class="semaforo-fila rojo">
+            <div class="semaforo-luz"></div>
+            <div class="semaforo-texto"><strong>Evítala si</strong>Tienes glaucoma, hipertensión no controlada, hernia de hiato en fase aguda o embarazo a partir del segundo trimestre. Consulta antes con tu médico.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="elemento">
+        <div class="elemento-num"><span class="n">03</span> Ejecución microdetallada</div>
+        <div class="elemento-titulo">Paso a paso</div>
+        <ol class="pasos">
+          <li>Coloca una manta doblada o un cojín firme a unos 15 cm de la pared.</li>
+          <li>Siéntate de lado, con la cadera derecha tocando la pared y las piernas dobladas a ese mismo lado.</li>
+          <li>Gírate suavemente apoyando el tronco hacia atrás mientras llevas las piernas hacia arriba contra la pared. El cojín queda bajo el sacro, no bajo la zona lumbar.</li>
+          <li>Permite que los brazos descansen abiertos, palmas hacia arriba. La cabeza descansa en el suelo, mentón ligeramente metido.</li>
+          <li>Cierra los ojos. Suelta el peso de las piernas. Permite que la mandíbula se afloje (es habitual que aparezca un pequeño suspiro: bienvenido).</li>
+          <li>Respira a tu ritmo durante 8 a 15 minutos. No fuerces la respiración; solo obsérvala.</li>
+          <li>Para salir: dobla las rodillas hacia el pecho, gírate al costado derecho y descansa un minuto antes de incorporarte.</li>
+        </ol>
+      </div>
+
+      <div class="elemento">
+        <div class="elemento-num"><span class="n">04</span> Frecuencia</div>
+        <div class="elemento-cuerpo"><span class="destacado">Diaria, antes de dormir</span>, entre 8 y 15 minutos. Es una de tus tres prácticas mínimas vitales (★ del calendario). Si te despiertas a las 03:00 y la rumiación aparece, puedes repetirla a media intensidad durante 5 minutos en lugar de coger el móvil.</div>
+      </div>
+
+      <div class="elemento">
+        <div class="elemento-num"><span class="n">05</span> Adaptación a tu noche</div>
+        <div class="elemento-cuerpo">Por tu patrón nocturno, en lugar de luz blanca, mantén una <span class="destacado">luz cálida atenuada</span>. Combínala con la <strong>Respiración 5–5</strong> los primeros 3 minutos. Si la mente sigue corriendo, no luches: simplemente nombra "pensamiento" en silencio cada vez que aparezca uno, y vuelve a tu cuerpo.</div>
+      </div>
+
+      <div class="elemento">
+        <div class="elemento-num"><span class="n">06</span> Clave terapéutica CEC®</div>
+        <div class="clave">No bajamos las piernas para descansar. Descansamos porque dejamos de empujar.</div>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ESCENA 8 · BITÁCORA EDITABLE -->
+<section class="escena escena-bitacora" data-titulo="Bitácora del despertar" data-duracion="20000">
+  <div class="luz bl"></div>
+  <div class="contenido">
+    <div class="cintillo aparece">Página 34 · Herramienta emocional 02</div>
+    <h2 class="titulo-escena aparece r1">Bitácora del<br><em>despertar 03:00</em></h2>
+    <p class="lead aparece r2">Tu cuaderno íntimo. Cuando la rumiación aparezca, escribir lo desactiva.</p>
+
+    <div class="bitacora-card aparece r3">
+      <p class="bitacora-intro">Cuando te despiertes de madrugada y la mente empiece a girar, <em>en lugar de coger el móvil</em>, abre esta página y responde con calma. No tienes que escribir bonito. Tienes que escribir <em>verdadero</em>.</p>
+
+      <div class="bitacora-preguntas">
+        <div class="pregunta-bloque">
+          <label>01 · El cuerpo</label>
+          <div class="p-texto">"¿Qué sensación física hay ahora mismo, y en qué parte exacta del cuerpo?"</div>
+          <textarea placeholder="Escribe libre, sin juzgarte..."></textarea>
+        </div>
+
+        <div class="pregunta-bloque">
+          <label>02 · La emoción</label>
+          <div class="p-texto">"¿Qué emoción acompaña a esta sensación? ¿Tiene nombre, color, forma?"</div>
+          <textarea placeholder="Nombra lo que aparece..."></textarea>
+        </div>
+
+        <div class="pregunta-bloque">
+          <label>03 · El pensamiento recurrente</label>
+          <div class="p-texto">"¿Qué frase está girando en mi cabeza? Escríbela completa, sin filtrar."</div>
+          <textarea placeholder="La frase exacta, tal cual..."></textarea>
+        </div>
+
+        <div class="pregunta-bloque">
+          <label>04 · El gesto de cierre</label>
+          <div class="p-texto">"Si pudiera decirle algo amable a esa parte de mí que no duerme, ¿qué le diría?"</div>
+          <textarea placeholder="Una sola frase basta..."></textarea>
+        </div>
+      </div>
+
+      <p class="bitacora-aviso">Esto que escribes es tuyo. No se guarda en ningún sitio. Es solo entre tu mano y la página.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ESCENA 9 · CIERRE -->
+<section class="escena escena-cierre" data-titulo="Cierre" data-duracion="999999">
+  <div class="luz c"></div>
+  <div class="contenido">
+    <div class="logo-cec aparece" style="margin-bottom:24px;"><span>CEC</span></div>
+    <div class="cintillo aparece r1">Y todo esto es tuyo</div>
+    <h2 class="titulo-escena aparece r2">Esto recibe <em>Elena</em>.<br>Esto recibirás <em>tú</em>.</h2>
+
+    <p class="cierre-mensaje aparece r3">Tu protocolo será <em>como este</em>: leído, pensado y diseñado a tu medida. Sin copiar. Sin atajos.</p>
+    <p class="cierre-pregunta aparece r4">¿Empezamos por el cuestionario?</p>
+
+    <div class="cta-bloque aparece r5">
+      <a href="https://wa.me/34665865557?text=Hola%20Kiko%2C%20me%20gustar%C3%ADa%20recibir%20m%C3%A1s%20informaci%C3%B3n%20sobre%20el%20M%C3%A9todo%20CEC%C2%AE" class="cta-principal" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Contactar por WhatsApp
+      </a>
+      <div class="cta-telefono">+34 665 865 557</div>
+      <div class="cta-nombre">Tu guía en el proceso<strong>Kiko Martínez</strong></div>
+    </div>
+
+    <div class="lema-final aparece r5">El cuerpo escucha.<br>La emoción guía.<br>La consciencia transforma.</div>
+    <div class="firma-cierre aparece r5">Tu bienestar,<strong>mi máxima prioridad.</strong></div>
+
+    <div class="aviso-legal aparece r5">El Método Integrativo CEC® es una propuesta terapéutica complementaria. No sustituye el diagnóstico ni el tratamiento médico, psicológico o psiquiátrico. En caso de duda, consulta siempre con tu profesional sanitario de referencia. CEC® · Marca registrada · Kiko Martínez.</div>
+  </div>
+</section>
+
+</main>
+
+<script>
+(function(){
+'use strict';
+
+/* FADE-IN AL SCROLL */
+var elementos = document.querySelectorAll('.aparece');
+var obs = new IntersectionObserver(function(es){
+  es.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+elementos.forEach(function(el){ obs.observe(el); });
+
+/* GAUGE */
+var arco = document.getElementById('gaugeArco');
+var gaugeNum = document.getElementById('gaugeNum');
+var gaugeAnim = false;
+function animarGauge(){
+  if(gaugeAnim) return; gaugeAnim = true;
+  var v = 22, m = 50, p = v/m, longi = 346, off = longi*(1-p);
+  setTimeout(function(){
+    arco.style.transition = 'stroke-dashoffset 2200ms cubic-bezier(0.22,1,0.36,1)';
+    arco.style.strokeDashoffset = off;
+  }, 200);
+  var inicio = null, dur = 2200;
+  function tick(t){
+    if(!inicio) inicio = t;
+    var pr = Math.min((t-inicio)/dur, 1);
+    var e = 1 - Math.pow(1-pr, 3);
+    gaugeNum.textContent = Math.round(e*v);
+    if(pr < 1) requestAnimationFrame(tick);
+  }
+  setTimeout(function(){ requestAnimationFrame(tick); }, 200);
+}
+var perfilCard = document.querySelector('.perfil-card');
+if(perfilCard){
+  var oG = new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ animarGauge(); oG.unobserve(e.target); } });
+  }, { threshold: 0.4 });
+  oG.observe(perfilCard);
+}
+
+/* AUDIO */
+var audioCEC = document.getElementById('audioCEC');
+var botonAudio = document.getElementById('botonAudio');
+var audioHint = document.getElementById('audioHint');
+var volObj = 0.30;
+
+if(audioCEC && botonAudio){
+  audioCEC.volume = 0;
+  function fadeAudio(d, h, dur, onFin){
+    var ini = null;
+    function p(t){
+      if(!ini) ini = t;
+      var pr = Math.min((t-ini)/dur, 1);
+      audioCEC.volume = d + (h-d)*pr;
+      if(pr < 1) requestAnimationFrame(p);
+      else if(onFin) onFin();
+    }
+    requestAnimationFrame(p);
+  }
+  botonAudio.addEventListener('click', function(){
+    if(audioHint) audioHint.classList.add('ocultar');
+    if(audioCEC.paused){
+      var pr = audioCEC.play();
+      if(pr !== undefined){
+        pr.then(function(){
+          botonAudio.classList.add('sonando');
+          fadeAudio(0, volObj, 1200);
+        }).catch(function(err){
+          console.log('Audio no disponible (verifica audio/ambient-cec.mp3):', err);
+        });
+      }
+    } else {
+      fadeAudio(audioCEC.volume, 0, 600, function(){
+        audioCEC.pause();
+        botonAudio.classList.remove('sonando');
+      });
+    }
+  });
+}
+
+/* AUTO-TOUR */
+var escenas = document.querySelectorAll('.escena');
+var tourProgreso = document.getElementById('tourProgreso');
+var btnTour = document.getElementById('btnTour');
+var tourBarra = document.getElementById('tourBarra');
+var tourPausado = false;
+var tourTimer = null;
+var tourRaf = null;
+var tourInicio = null;
+var escenaActual = 0;
+var escenaDuracion = 13000;
+
+/* Crear puntos del progreso */
+escenas.forEach(function(){
+  var d = document.createElement('div');
+  d.className = 'tdot';
+  tourProgreso.appendChild(d);
+});
+var dots = tourProgreso.querySelectorAll('.tdot');
+
+function actualizarDots(idx){
+  dots.forEach(function(d, i){
+    d.classList.remove('activo','completo');
+    if(i < idx) d.classList.add('completo');
+    else if(i === idx) d.classList.add('activo');
+  });
+}
+
+function avanzarBarra(){
+  if(tourPausado || !tourInicio) return;
+  var ahora = performance.now();
+  var trans = ahora - tourInicio;
+  var pct = Math.min((trans / escenaDuracion) * 100, 100);
+  tourBarra.style.width = pct + '%';
+  if(pct < 100) tourRaf = requestAnimationFrame(avanzarBarra);
+}
+
+function irAEscena(idx){
+  if(idx >= escenas.length) idx = escenas.length - 1;
+  if(idx < 0) idx = 0;
+  escenaActual = idx;
+  var dur = parseInt(escenas[idx].getAttribute('data-duracion'), 10) || 14000;
+  escenaDuracion = dur;
+  actualizarDots(idx);
+  tourBarra.style.width = '0%';
+  escenas[idx].scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  if(tourTimer){ clearTimeout(tourTimer); tourTimer = null; }
+  if(tourRaf){ cancelAnimationFrame(tourRaf); tourRaf = null; }
+
+  if(!tourPausado && dur < 999999){
+    /* Pequeño delay para que termine el scroll antes de iniciar el timer */
+    setTimeout(function(){
+      tourInicio = performance.now();
+      tourRaf = requestAnimationFrame(avanzarBarra);
+      tourTimer = setTimeout(function(){
+        irAEscena(escenaActual + 1);
+      }, dur);
+    }, 800);
+  }
+}
+
+function pausarTour(){
+  tourPausado = true;
+  btnTour.classList.add('pausado');
+  btnTour.setAttribute('aria-label', 'Reanudar tour');
+  if(tourTimer){ clearTimeout(tourTimer); tourTimer = null; }
+  if(tourRaf){ cancelAnimationFrame(tourRaf); tourRaf = null; }
+}
+
+function reanudarTour(){
+  tourPausado = false;
+  btnTour.classList.remove('pausado');
+  btnTour.setAttribute('aria-label', 'Pausar tour');
+  irAEscena(escenaActual);
+}
+
+btnTour.addEventListener('click', function(){
+  if(tourPausado) reanudarTour();
+  else pausarTour();
+});
+
+/* Auto-pausa al tocar textareas */
+document.querySelectorAll('textarea').forEach(function(ta){
+  ta.addEventListener('focus', function(){
+    if(!tourPausado) pausarTour();
+  });
+});
+
+/* Detectar escena activa por scroll manual */
+var oEscena = new IntersectionObserver(function(es){
+  es.forEach(function(e){
+    if(e.isIntersecting){
+      var idx = Array.prototype.indexOf.call(escenas, e.target);
+      if(idx !== escenaActual){
+        escenaActual = idx;
+        actualizarDots(idx);
+      }
+    }
+  });
+}, { threshold: 0.5 });
+escenas.forEach(function(e){ oEscena.observe(e); });
+
+/* Arrancar el tour tras 2 segundos */
+actualizarDots(0);
+setTimeout(function(){
+  if(!tourPausado) irAEscena(0);
+}, 2200);
+
+/* Teclado para navegación manual */
+document.addEventListener('keydown', function(e){
+  if(document.activeElement && (document.activeElement.tagName === 'TEXTAREA' || document.activeElement.tagName === 'INPUT')) return;
+  if(e.key === 'ArrowDown' || e.key === 'ArrowRight'){
+    e.preventDefault();
+    pausarTour();
+    irAEscena(escenaActual + 1);
+  } else if(e.key === 'ArrowUp' || e.key === 'ArrowLeft'){
+    e.preventDefault();
+    pausarTour();
+    irAEscena(escenaActual - 1);
+  } else if(e.key === ' '){
+    e.preventDefault();
+    if(tourPausado) reanudarTour(); else pausarTour();
+  }
+});
+
+})();
+</script>
+
+</body>
+</html>
