@@ -825,5 +825,26 @@ document.addEventListener('keydown', function(e){
 </script>
 
 <audio id="audioCEC" src="audio/musica.mp3" loop preload="auto"></audio>
+
+<script>
+(function() {
+    const btn = document.getElementById('botonAudio');
+    const audio = document.getElementById('audioCEC');
+    
+    if (btn && audio) {
+        btn.addEventListener('click', function() {
+            if (audio.paused) {
+                audio.play().then(() => {
+                    btn.classList.add('sonando');
+                }).catch(err => console.log("Error:", err));
+            } else {
+                audio.pause();
+                btn.classList.remove('sonando');
+            }
+        });
+    }
+})();
+</script>
+
 </body>
 </html>
